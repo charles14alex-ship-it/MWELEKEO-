@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MWELEKEO - AI Study App</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#152a52;color:white;padding:18px 16px;position:sticky;top:0;z-index:5}
+.brand{font-size:25px;font-weight:800}.sub{opacity:.8;font-size:12px;margin-top:3px}
+nav{display:flex;gap:7px;overflow:auto;margin-top:14px}nav button{border:0;background:#294577;color:white;padding:9px 12px;border-radius:20px;white-space:nowrap}
+main{max-width:1000px;margin:auto;padding:18px}.page{display:none}.page.active{display:block}
+.hero{background:linear-gradient(135deg,#18376e,#4b73c7);color:white;border-radius:20px;padding:25px;margin-bottom:18px}
+h1,h2,h3{margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.card{background:white;border-radius:16px;padding:17px;box-shadow:0 3px 15px #00000010}
+button,.btn{cursor:pointer;border:0;border-radius:10px;padding:11px 15px;background:#2455a6;color:white;font-weight:600}
+.secondary{background:#e9eef8;color:#17315d}.danger{background:#c63d3d}
+input,textarea,select{width:100%;padding:12px;border:1px solid #d5dbea;border-radius:10px;margin:7px 0 12px;font:inherit}
+textarea{min-height:110px;resize:vertical}.plans .card{border:2px solid transparent}.plans .featured{border-color:#2455a6}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#edf2ff;color:#2455a6;font-size:12px;font-weight:bold}
+.item{padding:12px;border-bottom:1px solid #edf0f6}.item:last-child{border:0}
+.small{font-size:13px;color:#68738a}.status{margin-top:10px;font-size:13px}
+footer{text-align:center;padding:25px;color:#70798b}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;padding:20px}.modal.open{display:flex;align-items:center;justify-content:center}.modalbox{background:white;max-width:500px;width:100%;padding:20px;border-radius:18px}
+@media(max-width:600px){main{padding:12px}.hero{padding:19px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">MWELEKEO</div>
+  <div class="sub">AI-powered university study companion</div>
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="showPage('library')">Library</button>
+    <button onclick="showPage('notes')">Notes</button>
+    <button onclick="showPage('schedule')">Ratiba</button>
+    <button onclick="showPage('ai')">AI Msaidizi</button>
+    <button onclick="showPage('discussion')">Discussion</button>
+    <button onclick="showPage('questions')">Questions</button>
+    <button onclick="showPage('assignments')">Assignments</button>
+    <button onclick="showPage('plans')">Plans</button>
+    <button onclick="showPage('settings')">Language</button>
+  </nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+  <div class="hero">
+    <span class="badge">MWELEKEO STUDY HUB</span>
+    <h1>Study smarter. Move forward.</h1>
+    <p>Library, notes, timetable, questions, assignments, discussion and an AI study assistant in one place.</p>
+    <button onclick="showPage('ai')">Ask AI</button>
+    <button class="secondary" onclick="showPage('library')">Open Library</button>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>📚 Maktaba</h3><p>Organise study materials, notes and uploaded files.</p><button onclick="showPage('library')">Open</button></div>
+    <div class="card"><h3>🤖 AI Msaidizi</h3><p>Type or speak a question and listen to the answer.</p><button onclick="showPage('ai')">Start AI</button></div>
+    <div class="card"><h3>📅 Ratiba</h3><p>Create your personal study timetable.</p><button onclick="showPage('schedule')">My Schedule</button></div>
+    <div class="card"><h3>📝 Assignments</h3><p>Write, save and manage assignment work.</p><button onclick="showPage('assignments')">Open</button></div>
+  </div>
+</section>
+
+<section id="library" class="page">
+  <h2>📚 Library / Maktaba</h2>
+  <div class="grid">
+    <div class="card"><h3>Study Materials</h3><p>Notes, PDFs, documents and other learning files.</p><button onclick="showPage('notes')">View Notes</button></div>
+    <div class="card"><h3>Questions Bank</h3><p>Practice questions and revision.</p><button onclick="showPage('questions')">Practice</button></div>
+    <div class="card"><h3>Discussion</h3><p>Share ideas and discuss with other students.</p><button onclick="showPage('discussion')">Join</button></div>
+    <div class="card"><h3>Upload Files</h3><p>Add your own study material to this device.</p><button onclick="document.getElementById('fileInput').click()">Upload</button></div>
+  </div>
+  <input id="fileInput" type="file" multiple accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.jpg,.jpeg,.png" style="display:none" onchange="handleFiles(this.files)">
+  <div id="fileList" class="card" style="margin-top:15px"><b>Your uploaded files</b><p class="small">No files uploaded yet.</p></div>
+</section>
+
+<section id="notes" class="page">
+  <h2>📝 Notes</h2>
+  <div class="card">
+    <input id="noteTitle" placeholder="Note title">
+    <textarea id="noteText" placeholder="Write your study note here..."></textarea>
+    <button onclick="saveNote()">Save Note</button>
+  </div>
+  <div id="notesList" class="card" style="margin-top:15px"></div>
+</section>
+
+<section id="schedule" class="page">
+  <h2>📅 Ratiba ya Masomo</h2>
+  <div class="card">
+    <input id="schSubject" placeholder="Subject / Course">
+    <input id="schDate" type="date">
+    <input id="schTime" type="time">
+    <input id="schDuration" placeholder="Duration e.g. 2 hours">
+    <button onclick="saveSchedule()">Add to schedule</button>
+  </div>
+  <div id="scheduleList" class="card" style="margin-top:15px"></div>
+</section>
+
+<section id="ai" class="page">
+  <h2>🤖 AI Msaidizi</h2>
+  <div class="card">
+    <span class="badge" id="planBadge">FREE PLAN</span>
+    <p class="small">Ask a study question by typing or using your microphone. Browser voice support may vary by device.</p>
+    <textarea id="aiQuestion" placeholder="Example: Explain opportunity cost in simple terms..."></textarea>
+    <button onclick="askAI()">Ask AI</button>
+    <button class="secondary" onclick="startVoice()">🎙️ Speak</button>
+    <button class="secondary" onclick="stopVoice()">⏹ Stop</button>
+    <button class="secondary" onclick="speakAnswer()">🔊 Read answer</button>
+    <div id="voiceStatus" class="status"></div>
+  </div>
+  <div id="aiAnswer" class="card" style="margin-top:15px"><b>AI answer</b><p class="small">Your answer will appear here.</p></div>
+</section>
+
+<section id="discussion" class="page">
+  <h2>💬 Discussion</h2>
+  <div class="card">
+    <input id="postName" placeholder="Your name">
+    <textarea id="postText" placeholder="Start a study discussion..."></textarea>
+    <button onclick="addPost()">Post discussion</button>
+  </div>
+  <div id="postsList" class="card" style="margin-top:15px"></div>
+</section>
+
+<section id="questions" class="page">
+  <h2>❓ Questions Bank</h2>
+  <div class="card">
+    <select id="questionSubject">
+      <option>General</option><option>Accounting</option><option>Economics</option><option>Finance</option><option>Taxation</option><option>Management</option><option>Other</option>
+    </select>
+    <textarea id="questionText" placeholder="Enter a question you want to practise..."></textarea>
+    <button onclick="saveQuestion()">Save Question</button>
+  </div>
+  <div id="questionsList" class="card" style="margin-top:15px"></div>
+</section>
+
+<section id="assignments" class="page">
+  <h2>📑 Assignments</h2>
+  <div class="card">
+    <input id="assTitle" placeholder="Assignment title">
+    <textarea id="assText" placeholder="Write your assignment or answer here..."></textarea>
+    <button onclick="saveAssignment()">Save Assignment</button>
+  </div>
+  <div id="assignmentsList" class="card" style="margin-top:15px"></div>
+</section>
+
+<section id="plans" class="page">
+  <h2>⭐ Free, Basic & Pro</h2>
+  <div class="grid plans">
+    <div class="card"><span class="badge">FREE</span><h3>Free</h3><p>Basic library access, notes, timetable, questions and limited AI.</p><button onclick="choosePlan('Free')">Choose Free</button></div>
+    <div class="card featured"><span class="badge">BASIC</span><h3>Basic</h3><p>More AI use, voice questions, AI answers read aloud, study tools and larger file access.</p><button onclick="choosePlan('Basic')">Choose Basic</button></div>
+    <div class="card"><span class="badge">PRO</span><h3>Pro</h3><p>Advanced study experience, higher AI limits, full study tools and priority features.</p><button onclick="choosePlan('Pro')">Choose Pro</button></div>
+  </div>
+  <div class="card" style="margin-top:15px">
+    <h3>💳 Payment Method</h3>
+    <p>Payment integration is ready for connection to your real payment provider.</p>
+    <select id="paymentMethod"><option>Mobile Money</option><option>Card</option><option>Bank Transfer</option></select>
+    <button onclick="paymentDemo()">Continue to payment</button>
+    <div id="paymentStatus" class="status"></div>
+  </div>
+</section>
+
+<section id="settings" class="page">
+  <h2>🌐 Language / Lugha</h2>
+  <div class="card">
+    <p>Choose your preferred language.</p>
+    <select id="language" onchange="changeLanguage(this.value)">
+      <option value="en">English</option><option value="sw">Kiswahili</option>
+    </select>
+    <p id="languageMessage" class="status"></p>
+  </div>
+</section>
+</main>
+
+<footer>MWELEKEO © 2026 — AI Study Companion</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+function showPage(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ $(id).classList.add('active'); window.scrollTo(0,0);
+}
+function getData(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}
+function setData(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function saveNote(){
+ const t=$('noteTitle').value.trim(), x=$('noteText').value.trim(); if(!t||!x)return alert('Enter note title and text.');
+ const a=getData('m_notes');a.unshift({t,x,date:new Date().toLocaleString()});setData('m_notes',a);$('noteTitle').value='';$('noteText').value='';renderNotes();
+}
+function renderNotes(){const a=getData('m_notes');$('notesList').innerHTML='<b>Saved notes</b>'+ (a.length?a.map((n,i)=>`<div class="item"><b>${esc(n.t)}</b><div>${esc(n.x)}</div><span class="small">${n.date}</span> <button class="danger" onclick="del('m_notes',${i},renderNotes)">Delete</button></div>`).join(''):'<p class="small">No notes yet.</p>')}
+function saveSchedule(){
+ const s=$('schSubject').value.trim(),d=$('schDate').value,t=$('schTime').value,u=$('schDuration').value.trim();if(!s||!d||!t)return alert('Fill subject, date and time.');
+ const a=getData('m_schedule');a.push({s,d,t,u});a.sort((x,y)=>(x.d+x.t).localeCompare(y.d+y.t));setData('m_schedule',a);renderSchedule();
+}
+function renderSchedule(){const a=getData('m_schedule');$('scheduleList').innerHTML='<b>Your timetable</b>'+ (a.length?a.map((n,i)=>`<div class="item"><b>${esc(n.s)}</b><br>${n.d} at ${n.t} ${n.u?'· '+esc(n.u):''}<br><button class="danger" onclick="del('m_schedule',${i},renderSchedule)">Delete</button></div>`).join(''):'<p class="small">No schedule items yet.</p>')}
+function addPost(){const n=$('postName').value.trim()||'Student',x=$('postText').value.trim();if(!x)return alert('Write a discussion first.');const a=getData('m_posts');a.unshift({n,x,date:new Date().toLocaleString()});setData('m_posts',a);$('postText').value='';renderPosts()}
+function renderPosts(){const a=getData('m_posts');$('postsList').innerHTML='<b>Recent discussions</b>'+ (a.length?a.map((p,i)=>`<div class="item"><b>${esc(p.n)}</b><div>${esc(p.x)}</div><span class="small">${p.date}</span></div>`).join(''):'<p class="small">No discussions yet.</p>')}
+function saveQuestion(){const s=$('questionSubject').value,x=$('questionText').value.trim();if(!x)return alert('Enter a question.');const a=getData('m_questions');a.unshift({s,x});setData('m_questions',a);$('questionText').value='';renderQuestions()}
+function renderQuestions(){const a=getData('m_questions');$('questionsList').innerHTML='<b>Saved questions</b>'+ (a.length?a.map((q,i)=>`<div class="item"><span class="badge">${esc(q.s)}</span><p>${esc(q.x)}</p><button onclick="answerLocal('${encodeURIComponent(q.x)}')">Ask AI</button></div>`).join(''):'<p class="small">No questions yet.</p>')}
+function answerLocal(q){showPage('ai');$('aiQuestion').value=decodeURIComponent(q);askAI()}
+function saveAssignment(){const t=$('assTitle').value.trim(),x=$('assText').value.trim();if(!t||!x)return alert('Enter assignment title and content.');const a=getData('m_assign');a.unshift({t,x,date:new Date().toLocaleString()});setData('m_assign',a);$('assTitle').value='';$('assText').value='';renderAssignments()}
+function renderAssignments(){const a=getData('m_assign');$('assignmentsList').innerHTML='<b>Saved assignments</b>'+ (a.length?a.map((q,i)=>`<div class="item"><b>${esc(q.t)}</b><p>${esc(q.x)}</p><span class="small">${q.date}</span> <button class="danger" onclick="del('m_assign',${i},renderAssignments)">Delete</button></div>`).join(''):'<p class="small">No assignments yet.</p>')}
+function del(k,i,fn){const a=getData(k);a.splice(i,1);setData(k,a);fn()}
+function handleFiles(files){const a=getData('m_files');[...files].forEach(f=>a.unshift({name:f.name,size:f.size,type:f.type}));setData('m_files',a);renderFiles()}
+function renderFiles(){const a=getData('m_files');$('fileList').innerHTML='<b>Your uploaded files</b>'+ (a.length?a.map(f=>`<div class="item">📎 <b>${esc(f.name)}</b><br><span class="small">${Math.round(f.size/1024)} KB</span></div>`).join(''):'<p class="small">No files uploaded yet.</p>')}
+function choosePlan(p){localStorage.setItem('m_plan',p);$('planBadge').textContent=p.toUpperCase()+' PLAN';alert(p+' plan selected. Connect a real payment provider before charging users.')}
+function paymentDemo(){$('paymentStatus').textContent='Payment flow selected: '+$('paymentMethod').value+'. Connect your real payment gateway to process transactions.'}
+function askAI(){
+ const q=$('aiQuestion').value.trim();if(!q)return alert('Type or speak a question first.');
+ const plan=localStorage.getItem('m_plan')||'Free';
+ let answer='I am the MWELEKEO study assistant demo. I received your question: "'+q+'". For a real AI answer, connect this app to your AI backend/API. Meanwhile, use the study library, notes, questions and assignments tools.';
+ if(plan==='Basic'||plan==='Pro') answer+=' Voice question and read-aloud features are enabled in this prototype.';
+ $('aiAnswer').innerHTML='<b>AI answer</b><p>'+esc(answer)+'</p>';
+}
+let recognition=null;
+function startVoice(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){$('voiceStatus').textContent='Voice recognition is not supported by this browser.';return}
+ recognition=new SR();recognition.lang=(localStorage.getItem('m_lang')==='sw'?'sw-TZ':'en-US');recognition.interimResults=false;
+ recognition.onstart=()=>{$('voiceStatus').textContent='🎙️ Listening... Speak now.'};
+ recognition.onresult=e=>{$('aiQuestion').value=e.results[0][0].transcript;$('voiceStatus').textContent='Voice captured. Press Ask AI.'};
+ recognition.onerror=e=>$('voiceStatus').textContent='Voice error: '+e.error;
+ recognition.start();
+}
+function stopVoice(){if(recognition)recognition.stop();$('voiceStatus').textContent='Stopped.'}
+function speakAnswer(){
+ const text=$('aiAnswer').innerText;if(!('speechSynthesis' in window)){alert('Text-to-speech is not supported.');return}
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=localStorage.getItem('m_lang')==='sw'?'sw-TZ':'en-US';speechSynthesis.speak(u)
+}
+function changeLanguage(v){localStorage.setItem('m_lang',v);$('languageMessage').textContent=v==='sw'?'Lugha imechaguliwa: Kiswahili.':'Language selected: English.'}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function renderFiles(){const a=getData('m_files');$('fileList').innerHTML='<b>Your uploaded files</b>'+ (a.length?a.map(f=>`<div class="item">📎 <b>${esc(f.name)}</b><br><span class="small">${Math.round(f.size/1024)} KB</span></div>`).join(''):'<p class="small">No files uploaded yet.</p>')}
+(function(){renderNotes();renderSchedule();renderPosts();renderQuestions();renderAssignments();renderFiles();$('planBadge').textContent=(localStorage.getItem('m_plan')||'Free').toUpperCase()+' PLAN';$('language').value=localStorage.getItem('m_lang')||'en'})()
+</script>
+</body>
+</html>
